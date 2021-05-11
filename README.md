@@ -106,10 +106,84 @@ java -jar target/folderName-1.0-SNAPSHOT.jar
 ## dependencies
 1. 添加存储在 mvn 中央库中的依赖
 
-    https://search.maven.org/
+    这节我们将以 log4j 为例，演示如何添加官方依赖。我们先在[这个网站](https://search.maven.org/)搜索log4j的唯一ID。
+
+    ```
+    <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.17</version>
+    </dependency>
+    ```
+
+    把这些粘贴到 .pom 的 <dependencies> 标签下;增加 lo4j配置文件;修改一下 App.java 文件...
+
+    试试？
+    ```
+    mvn clean package
+    java -jar target/folderName-1.0-SNAPSHOT.jar 
+    ```
+
+    很不幸，报错了，他说，找不到 log4j这个类。为什么编译的时候没有问题，运行的时候出问题了呢？
+
+    ```
+    Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/log4j/Logger
+    ```
+
+    原来是运行的时候找不到第三方库；添加 assembly 依赖
+
+    ```
+    <plugin>  
+        <groupId>org.apache.maven.plugins</groupId>  
+        <artifactId>maven-assembly-plugin</artifactId>  
+        <version>2.5.5</version>  
+        <configuration>  
+            <archive>  
+                <manifest>  
+                    <mainClass>com.test.App</mainClass>  
+                </manifest>  
+            </archive>  
+            <descriptorRefs>  
+                <descriptorRef>jar-with-dependencies</descriptorRef>  
+            </descriptorRefs>  
+        </configuration>  
+    </plugin> 
+    ```
+
+    再试试？
+    ```
+    mvn clean  package assembly:single
+    java -jar target/folderName-1.0-SNAPSHOT.jar 
+    ```
 
 
 2. 添加本地依赖
+
+    先把本地依赖通过 mvn install 安装到本地的 mvn 仓库之后，再用 1 的方法引入
+
+    以 javastruct库为例
+
+    将 javastruct-0.1.jar 拷贝到 lib 路径下，然后 install
+
+    ```
+    cd lib
+    mvn install:install-file -DgroupId=com.javastruct -DartifactId=javastruct -Dversion=0.1 -Dpackaging=jar -Dfile=javastruct-0.1.jar
+    ```
+
+    安装后就可以使用标准 mvn 格式将 javastruct 导入了
+    ```
+    <dependency>
+        <groupId>com.javastruct</groupId>
+        <artifactId>javastruct</artifactId>
+        <version>0.1</version>
+    </dependency>
+    ```
+
+    试试？
+    ```
+    mvn clean  package assembly:single
+    java -jar target/folderName-1.0-SNAPSHOT.jar 
+    ```
 
 ## advanced
 1. 用mvn创建 spring boot 项目
