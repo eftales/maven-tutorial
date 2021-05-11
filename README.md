@@ -9,7 +9,7 @@ mvn == 3.3.9
 
 - notices
 
-    java11 在 ubuntu 上和 mvn 配合起来有 bug
+    java11 在 ubuntu16.04 上和 mvn 配合起来有 bug
 
 ## catalogue
 
