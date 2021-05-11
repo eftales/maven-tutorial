@@ -62,13 +62,59 @@ java com.test.App
 
 
 ## package
+我们直接执行 `mvn package`，就会在 `target` 这个文件夹下生成对应的 `.jar` 文件。但是这个 `jar` 文件并不能通过 `java- jar folderName.jar` 来执行，会报错:
 
+```
+no main manifest attribute, in folderName-1.0-SNAPSHOT.jar
+```
+
+这是因为我们没有指定这个 .jar 的入口类。
+
+jar 文件的本质上是一个压缩了编译后的 .class 文件和资源文件的 rar 格式的压缩包。
+
+直接把 jar 文件作为参数交给 java 来执行，java 就有点不清楚该从哪个文件执行起...我们只需要增加一个 manifest 文件即可解决
+
+这里并不推荐手写 manifest 文件，而是用 mvn 的插件`maven-jar-plugin`自动生成
+
+在 .pom 文件的 <url> 之后 <dependencies> 之前加入:
+```
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>com.test.App</mainClass>
+                        <addClasspath>true</addClasspath>
+                    </manifest>
+                </archive>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+
+```
+
+再试试？
+```
+mvn clean package
+java -jar target/folderName-1.0-SNAPSHOT.jar
+```
 
 ## dependencies
 1. 添加存储在 mvn 中央库中的依赖
+
+    https://search.maven.org/
 
 
 2. 添加本地依赖
 
 ## advanced
 1. 用mvn创建 spring boot 项目
+
+## Core Concepts
+maven只定义了项目的生命周期，但是并没有规定生命周期的实现。生命周期都是由插件实现的。
+
+为了简化配置，特别常用的插件（clean compile package）就直接默认集成在了项目中，但是我们也可以根据需要自行更换或引入插件。
