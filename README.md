@@ -182,7 +182,7 @@ java -jar target/folderName-1.0-SNAPSHOT.jar
     试试？
     ```
     mvn clean  package assembly:single
-    java -jar target/folderName-1.0-SNAPSHOT.jar 
+    java -jar target/folderName-1.0-SNAPSHOT-jar-with-dependencies.jar
     ```
 
 ## advanced
